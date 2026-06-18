@@ -36,11 +36,11 @@ RUN npm run build
 # Permissions Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
-# Optimisation Laravel (IMPORTANT en prod)
+# Optimisation Laravel
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
 EXPOSE 10000
 
-CMD sh -c "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+CMD sh -c "php artisan storage:link && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
