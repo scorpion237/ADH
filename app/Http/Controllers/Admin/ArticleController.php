@@ -37,10 +37,10 @@ class ArticleController extends Controller
         $data['slug'] = Str::slug($validated['title']) . '-' . rand(100, 999);
         $data['is_published'] = $request->has('is_published');
         $data['published_at'] = $data['is_published'] ? ($validated['published_at'] ?? now()) : null;
-        $targetDir = "public/serveur_central/";
+        //$targetDir = "public/storage/";
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('articles', 'public');
-            $data['image'] = $targetDir .$path;//'/storage/' . $path;
+            $data['image'] = '/storage/' . $path; //$targetDir .$path;
         }
 
         Article::create($data);
