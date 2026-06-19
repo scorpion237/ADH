@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y \
 # Extensions PHP
 RUN docker-php-ext-install pdo pdo_pgsql zip
 
-# Node.js 22
+# Installation Node.js 22
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs
 
-# Composer
+# Installation Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
@@ -27,14 +27,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Dépendances JS + build Vite
-ENV NODE_ENV=production
 RUN npm install
 RUN npm run build
-
-# Optimisation Laravel (APRÈS le build Vite)
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
 
 # Permissions Laravel
 RUN chmod -R 775 storage bootstrap/cache
