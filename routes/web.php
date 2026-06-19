@@ -16,9 +16,6 @@ Route::get('/projects/{slug}', [HomeController::class, 'showProject'])->name('pr
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Admin Auth routes
-//Route::post('/admin/register',      [AuthController::class, 'authenticate'])->name('register');
-Route::get('/admin/register', [AuthController::class, 'create'])->name('register');
-Route::post('/admin/register', [AuthController::class, 'store'])->name('register.store');
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/admin/login', [AuthController::class, 'login']);
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');

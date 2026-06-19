@@ -23,26 +23,31 @@ WORKDIR /app
 
 COPY . .
 
-# Dépendances PHP
+# Installer dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Dépendances JS + build Vite
+# IMPORTANT: forcer environnement production pour Vite
 ENV NODE_ENV=production
+
+# Installer + build frontend
 RUN npm install
 RUN npm run build
-
-# Optimisation Laravel (APRÈS le build Vite)
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
 
 # Permissions Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
+# Optimisation Laravel
+RUN php artisan optimize
+RUN php artisan config:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
+RUN php artisan cache:clear
+RUN php artisan event:clear
+RUN php artisan optimize:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+RUN php artisan db:seed --force
 EXPOSE 10000
 
-# db:seed et storage:link au runtime (DB disponible seulement ici)
-CMD sh -c "php artisan storage:link && \
-           php artisan migrate --force && \
-           php artisan db:seed --force && \
-           php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+CMD sh -c "php artisan storage:link && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"

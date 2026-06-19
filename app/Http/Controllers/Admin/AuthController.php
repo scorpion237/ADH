@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     public function showLogin()
@@ -17,30 +16,6 @@ class AuthController extends Controller
         return view('admin.auth.login');
     }
 
-    public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|confirmed|min:8',
-    ]);
-
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
-
-    Auth::login($user);
-
-    return redirect()
-        ->route('admin.login')
-        ->with('success', 'Compte créé avec succès.');
-}
-    public function create()
-{
-    return view('admin.auth.register');
-}
     public function login(Request $request)
     {
         $credentials = $request->validate([

@@ -3,12 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
+    
     <!-- SEO Meta Tags -->
     <title>@yield('seo_title', $settings['site_title'] ?? 'ONG ADH | Action pour le Développement Humain')</title>
     <meta name="description" content="@yield('seo_description', $settings['site_description'] ?? 'L\'ONG ADH œuvre pour le développement durable, l\'éducation, la santé et l\'eau potable.')">
-
+    
     <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="@yield('seo_title', $settings['site_title'] ?? 'ONG ADH | Action pour le Développement Humain')">
@@ -16,6 +15,7 @@
     <meta property="og:image" content="@yield('seo_image', asset('images/logo_og.jpg'))">
     <meta property="og:url" content="{{ request()->url() }}">
     <meta property="og:site_name" content="ONG ADH">
+
     <!-- Fonts - Plus Jakarta Sans (Friendly, highly readable for all ages) -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet" />
