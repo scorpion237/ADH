@@ -20,9 +20,17 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/admin/login', [AuthController::class, 'login']);
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::get('/admin/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/admin/register', [AuthController::class, 'register'])->name('register.store');;
 
+// Désactiver register en production
+Route::get('/admin/register', [AuthController::class, 'showRegister'])
+    ->name('register')
+    ->middleware(app()->isProduction() ? 'auth' : []);
+
+Route::post('/admin/register', [AuthController::class, 'register'])
+    ->middleware(app()->isProduction() ? 'auth' : []);
+    
 // Admin protected routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
