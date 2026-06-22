@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
-use App\Helpers\CloudinaryHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -24,25 +24,23 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'           => 'required|string|max:255',
-            'content'         => 'required|string',
-            'image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'seo_title'       => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string',
-            'is_published'    => 'nullable|boolean',
-            'published_at'    => 'nullable|date',
+            'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date',
         ]);
 
         $data = $validated;
-        $data['slug']         = Str::slug($validated['title']) . '-' . rand(100, 999);
+        $data['slug'] = Str::slug($validated['title']) . '-' . rand(100, 999);
         $data['is_published'] = $request->has('is_published');
         $data['published_at'] = $data['is_published'] ? ($validated['published_at'] ?? now()) : null;
 
         if ($request->hasFile('image')) {
-            $data['image'] = CloudinaryHelper::upload(
-                $request->file('image')->getRealPath(),
-                'articles'
-            );
+            $path = $request->file('image')->store('articles', 'public');
+            $data['image'] = '/storage/' . $path;
         }
 
         Article::create($data);
@@ -59,13 +57,13 @@ class ArticleController extends Controller
     public function update(Request $request, Article $article)
     {
         $validated = $request->validate([
-            'title'           => 'required|string|max:255',
-            'content'         => 'required|string',
-            'image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'seo_title'       => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string',
-            'is_published'    => 'nullable|boolean',
-            'published_at'    => 'nullable|date',
+            'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date',
         ]);
 
         $data = $validated;
@@ -77,14 +75,13 @@ class ArticleController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($article->image && Str::startsWith($article->image, 'https://res.cloudinary.com')) {
-                CloudinaryHelper::delete($article->image);
+            // Delete old image if it exists and is local
+            if ($article->image && Str::startsWith($article->image, '/storage/')) {
+                Storage::disk('public')->delete(Str::after($article->image, '/storage/'));
             }
 
-            $data['image'] = CloudinaryHelper::upload(
-                $request->file('image')->getRealPath(),
-                'articles'
-            );
+            $path = $request->file('image')->store('articles', 'public');
+            $data['image'] = '/storage/' . $path;
         }
 
         $article->update($data);
@@ -95,8 +92,8 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
-        if ($article->image && Str::startsWith($article->image, 'https://res.cloudinary.com')) {
-            CloudinaryHelper::delete($article->image);
+        if ($article->image && Str::startsWith($article->image, '/storage/')) {
+            Storage::disk('public')->delete(Str::after($article->image, '/storage/'));
         }
 
         $article->delete();
