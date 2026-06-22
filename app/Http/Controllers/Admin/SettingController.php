@@ -9,30 +9,34 @@ use Illuminate\Http\Request;
 class SettingController extends Controller
 {
     public function index()
-    {
-         $defaults = [
-        ['key' => 'site_title',       'value' => 'ONG ADH', 'group' => 'general'],
-        ['key' => 'donation_url',     'value' => '#faire-un-don-modal', 'group' => 'general'],
-        ['key' => 'site_description', 'value' => '', 'group' => 'seo'],
-        ['key' => 'google_analytics', 'value' => '', 'group' => 'analytics'],
-        ['key' => 'contact_email',    'value' => '', 'group' => 'contact'],
-        ['key' => 'contact_phone',    'value' => '', 'group' => 'contact'],
-        ['key' => 'contact_address',  'value' => '', 'group' => 'contact'],
-        ['key' => 'facebook_url',     'value' => '', 'group' => 'contact'],
-        ['key' => 'twitter_url',      'value' => '', 'group' => 'contact'],
-        ['key' => 'linkedin_url',     'value' => '', 'group' => 'contact'],
-        ['key' => 'whatsapp_number',  'value' => '', 'group' => 'contact'],
-    ];
+{
+    $settings = Setting::all()->groupBy('group');
 
-    foreach ($defaults as $default) {
-        \App\Models\Setting::firstOrCreate(
-            ['key' => $default['key']],
-            $default
-        );
-    }
+    // Si vide, initialiser automatiquement
+    if ($settings->isEmpty()) {
+        $defaults = [
+            ['key' => 'site_title',       'value' => '', 'group' => 'general'],
+            ['key' => 'donation_url',     'value' => '', 'group' => 'general'],
+            ['key' => 'site_description', 'value' => '', 'group' => 'seo'],
+            ['key' => 'google_analytics', 'value' => '', 'group' => 'analytics'],
+            ['key' => 'contact_email',    'value' => '', 'group' => 'contact'],
+            ['key' => 'contact_phone',    'value' => '', 'group' => 'contact'],
+            ['key' => 'contact_address',  'value' => '', 'group' => 'contact'],
+            ['key' => 'facebook_url',     'value' => '', 'group' => 'contact'],
+            ['key' => 'twitter_url',      'value' => '', 'group' => 'contact'],
+            ['key' => 'linkedin_url',     'value' => '', 'group' => 'contact'],
+            ['key' => 'whatsapp_number',  'value' => '', 'group' => 'contact'],
+        ];
+
+        foreach ($defaults as $default) {
+            Setting::create($default);
+        }
+
         $settings = Setting::all()->groupBy('group');
-        return view('admin.settings.index', compact('settings'));
     }
+
+    return view('admin.settings.index', compact('settings'));
+}
 
     public function update(Request $request)
     {
