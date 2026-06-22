@@ -24,12 +24,12 @@ Route::get('/admin/register', [AuthController::class, 'showRegister'])->name('re
 Route::post('/admin/register', [AuthController::class, 'register'])->name('register.store');;
 
 // Désactiver register en production
-Route::get('/admin/register', [AuthController::class, 'showRegister'])
-    ->name('register')
-    ->middleware(app()->isProduction() ? 'auth' : []);
+//Route::get('/admin/register', [AuthController::class, 'showRegister'])
+  //  ->name('register')
+    //->middleware(app()->isProduction() ? 'auth' : []);
 
-Route::post('/admin/register', [AuthController::class, 'register'])
-    ->middleware(app()->isProduction() ? 'auth' : []);
+//Route::post('/admin/register', [AuthController::class, 'register'])
+  //  ->middleware(app()->isProduction() ? 'auth' : []);
     
 // Admin protected routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
